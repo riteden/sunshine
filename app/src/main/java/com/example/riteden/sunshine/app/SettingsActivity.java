@@ -32,6 +32,7 @@ public class SettingsActivity extends PreferenceActivity
         // updated when the preference changes.
         //SharedPreferences preferences = PreferenceManager
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_location_key)));
+        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_unit_key)));
         // TODO: Add preferences
     }
 

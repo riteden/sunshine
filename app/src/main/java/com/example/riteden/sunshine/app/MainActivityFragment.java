@@ -1,9 +1,11 @@
 package com.example.riteden.sunshine.app;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -63,8 +65,7 @@ public class MainActivityFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.action_refresh:
                 // Not implemented here
-                FetchWeatherTask weatherTask = new FetchWeatherTask();
-                weatherTask.execute("94043");
+                refresh();
                 return true;
             case R.id.action_settings:
                 Intent settingIntent = new Intent(getActivity(), SettingsActivity.class);
@@ -77,20 +78,31 @@ public class MainActivityFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
+    public void refresh(){
+        FetchWeatherTask weatherTask = new FetchWeatherTask();
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String location = sharedPref.getString(getString(R.string.pref_location_key), getString(R.string.pref_location_default));
+
+        //String location = getActivity().getSharedPreferences(getString(R.string.pref_location_key), R.string.pref_location_default).toString();
+        //Log.v("debug refresh", "location = " + location);
+        weatherTask.execute(location);
+    }
+
+    @Override
+    public void onStart(){
+        super.onStart();
+        refresh();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootview = inflater.inflate(R.layout.fragment_main, container, false);
-        String [] str = {
-                "Today - Sunny - 88/63",
-                "Today - Sunny - 88/63"
-        };
-        List<String> myList = new ArrayList<String>(Arrays.asList(str));
         //List<String> myList = new ArrayList<String>();
 
         //myList.add(new FetchWeatherTask().execute());
-       AA = new ArrayAdapter<String>(getActivity(), R.layout.list_item_forecast, R.id.list_item_forecast_textview, myList);
+       AA = new ArrayAdapter<String>(getActivity(), R.layout.list_item_forecast, R.id.list_item_forecast_textview, new ArrayList<String>());
        ListView listView = (ListView) rootview.findViewById(R.id.listview_forecast);
        listView.setAdapter(AA);
         // These two need to be declared outside the try/catch
@@ -237,7 +249,13 @@ public class MainActivityFragment extends Fragment {
             // For presentation, assume the user doesn't care about tenths of a degree.
             long roundedHigh = Math.round(high);
             long roundedLow = Math.round(low);
-
+            //String unit = getActivity().getSharedPreferences(getString(R.string.pref_unit_key), R.string.pref_unit_default).toString();
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String unit = sharedPref.getString(getString(R.string.pref_unit_key), getString(R.string.pref_unit_default));
+            if(unit.equals("0")){
+                roundedHigh = (long) (roundedHigh * 1.8 + 32);
+                roundedLow = (long) (roundedLow * 1.8 + 32);
+            }
             String highLowStr = roundedHigh + "/" + roundedLow;
             return highLowStr;
         }
