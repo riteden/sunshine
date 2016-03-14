@@ -57,6 +57,7 @@ public class MainActivityFragment extends Fragment {
         // TODO Add your menu entries here
         inflater.inflate(R.menu.forcastfragment, menu);
         inflater.inflate(R.menu.main, menu);
+        inflater.inflate(R.menu.maps, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -71,11 +72,25 @@ public class MainActivityFragment extends Fragment {
                 Intent settingIntent = new Intent(getActivity(), SettingsActivity.class);
                 startActivity(settingIntent);
                 return true;
+            case R.id.action_map:
+                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                String location = sharedPref.getString(getString(R.string.pref_location_key), getString(R.string.pref_location_default));
+                Uri gmmIntentUri = Uri.parse("geo:0,0?").buildUpon().appendQueryParameter("q", location).build();
+                showMap(gmmIntentUri);
+                return true;
             default:
                 break;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void showMap(Uri geoLocation) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(geoLocation);
+        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivity(intent);
+        }
     }
 
     public void refresh(){
