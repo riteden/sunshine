@@ -81,4 +81,6 @@
     <string name="pref_unit_label">Temperature Unit</string>
     <string name="pref_unit_default" translatable="false">1</string>
     <string name="action_maps">Show in Map</string>
+    <string name="pref_units_metric" translatable="false">metric</string>
+    <string name="pref_units_imperial" translatable="false">imperial</string>
 </resources>
