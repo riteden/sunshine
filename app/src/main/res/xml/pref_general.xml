@@ -12,5 +12,5 @@
         android:title="@string/pref_unit_label"
         android:entries="@array/temp_unit_name"
         android:entryValues="@array/temp_unit"
-        android:defaultValue="@string/pref_unit_default" />
+        android:defaultValue="@string/pref_units_metric" />
 </PreferenceScreen>

@@ -99,6 +99,7 @@ public class TestProvider extends AndroidTestCase {
         db.delete(WeatherEntry.TABLE_NAME, null, null);
         db.delete(LocationEntry.TABLE_NAME, null, null);
         db.close();
+
     }
 
     /*
