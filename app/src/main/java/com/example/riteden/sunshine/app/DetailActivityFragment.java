@@ -32,7 +32,7 @@ public class DetailActivityFragment extends Fragment
     private CursorAdapter adapter;
     private final int MY_LOADER_ID = 0;
 
-    private static final String[] FORECAST_COLUMNS = {
+    private static final String[] DETAIL_COLUMNS = {
             WeatherContract.WeatherEntry.TABLE_NAME + "." + WeatherContract.WeatherEntry._ID,
             WeatherContract.WeatherEntry.COLUMN_DATE,
             WeatherContract.WeatherEntry.COLUMN_SHORT_DESC,
@@ -152,7 +152,7 @@ public class DetailActivityFragment extends Fragment
         CursorLoader loader = new CursorLoader(
                 getActivity(),
                 intent.getData(),
-                FORECAST_COLUMNS,
+                DETAIL_COLUMNS,
                 null,
                 null,
                 null
