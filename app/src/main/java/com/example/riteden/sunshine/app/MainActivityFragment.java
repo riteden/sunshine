@@ -50,6 +50,7 @@ public class MainActivityFragment extends Fragment
         implements LoaderManager.LoaderCallbacks<Cursor>{
     private ForecastAdapter AA;
 
+    private static final int FORECAST_LOADER = 0;
     private static final String[] FORECAST_COLUMNS = {
             // In this case the id needs to be fully qualified with a table name, since
             // the content provider joins the location & weather tables in the background
@@ -91,6 +92,12 @@ public class MainActivityFragment extends Fragment
         setHasOptionsMenu(true);
     }
 
+
+    // since we read the location when we create the loader, all we need to do is restart things
+    void onLocationChanged( ) {
+        refresh();
+        getLoaderManager().restartLoader(MY_LOADER_ID, null, this);
+    }
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // TODO Add your menu entries here
