@@ -255,7 +255,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
             return null;
         }
         String locationQuery = params[0];
-        Log.v("Async debug refresh", "location = " + locationQuery);
+        Log.v(LOG_TAG, "location = " + locationQuery);
 
         // These two need to be declared outside the try/catch
         // so that they can be closed in the finally block.
@@ -290,7 +290,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
                     .build();
 
             URL url = new URL(builtUri.toString());
-            Log.v("check URL", url.toString());
+            Log.v(LOG_TAG, "check URL:" + url.toString());
             // Create the request to OpenWeatherMap, and open the connection
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");

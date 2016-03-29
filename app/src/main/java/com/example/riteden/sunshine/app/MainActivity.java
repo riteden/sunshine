@@ -1,5 +1,6 @@
 package com.example.riteden.sunshine.app;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -13,11 +14,12 @@ import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.example.riteden.sunshine.app.data.WeatherContract;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MainActivityFragment.Callback {
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -25,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private GoogleApiClient client;
     private static final String DETAILFRAGMENT_TAG = "DFTAG";
+    private final String LOG_TAG = MainActivity.class.getSimpleName();
     private String mLocation;
     private boolean mTwoPane;
     @Override
@@ -67,9 +70,28 @@ public class MainActivity extends AppCompatActivity {
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
 
 
-        Log.v("mTwoPane = ", Boolean.toString(mTwoPane));
+        Log.v(LOG_TAG, "mTwoPane = " + Boolean.toString(mTwoPane));
     }
 
+
+    public void onItemSelected(Uri dateUri){
+        if(mTwoPane == true){
+
+            Bundle args = new Bundle();
+            args.putParcelable(DetailActivityFragment.DETAIL_URI, dateUri);
+
+            DetailActivityFragment fragment = new DetailActivityFragment();
+            fragment.setArguments(args);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.weather_detail_container, new DetailActivityFragment(), DETAILFRAGMENT_TAG)
+                    .commit();
+        }
+        else{
+            Intent intent = new Intent(this, DetailActivity.class)
+                    .setData(dateUri);
+            startActivity(intent);
+        }
+    }
 
     @Override
     public void onStart() {
@@ -116,13 +138,19 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         String location = Utility.getPreferredLocation( this );
         // update the location in our second pane using the fragment manager
-
         if (location != null && !location.equals(mLocation)) {
-            MainActivityFragment ff = (MainActivityFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_forecast);
-            if ( null != ff ) {
+            MainActivityFragment ff = (MainActivityFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_forecast);
+            if (null != ff) {
                 ff.onLocationChanged();
+            }
+            DetailActivityFragment df = (DetailActivityFragment) getSupportFragmentManager().findFragmentByTag(DETAILFRAGMENT_TAG);
+            if (null != df) {
+                df.onLocationChanged(location);
             }
             mLocation = location;
         }
     }
+
+
 }
+

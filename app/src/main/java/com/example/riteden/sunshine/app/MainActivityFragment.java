@@ -1,5 +1,6 @@
 package com.example.riteden.sunshine.app;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -48,8 +49,10 @@ import android.support.v4.content.CursorLoader;
  */
 public class MainActivityFragment extends Fragment
         implements LoaderManager.LoaderCallbacks<Cursor>{
-    private ForecastAdapter AA;
 
+    Callback mCallback;
+    private ForecastAdapter AA;
+    private final String LOG_TAG = MainActivityFragment.class.getSimpleName();
     private static final int FORECAST_LOADER = 0;
     private static final String[] FORECAST_COLUMNS = {
             // In this case the id needs to be fully qualified with a table name, since
@@ -82,9 +85,25 @@ public class MainActivityFragment extends Fragment
     static final int COL_COORD_LONG = 8;
     private static final int MY_LOADER_ID = 0;
 
+
+
+
     public MainActivityFragment() {
 
     }
+
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement. This mechanism allows activities to be notified of item
+     * selections.
+     */
+    public interface Callback {
+        /**
+         * DetailFragmentCallback for when an item has been selected.
+         */
+        public void onItemSelected(Uri dateUri);
+    }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -169,8 +188,7 @@ public class MainActivityFragment extends Fragment
         FetchWeatherTask weatherTask = new FetchWeatherTask(getActivity());
 
         String location = Utility.getPreferredLocation(getActivity());
-        //String location = getActivity().getSharedPreferences(getString(R.string.pref_location_key), R.string.pref_location_default).toString();
-        Log.v("debug refresh", "location = " + location);
+        Log.v(LOG_TAG, "location = " + location);
         weatherTask.execute(location);
     }
 
@@ -200,11 +218,17 @@ public class MainActivityFragment extends Fragment
                 Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
                 if (cursor != null) {
                     String locationSetting = Utility.getPreferredLocation(getActivity());
+                    Uri weatherForLocationUri = WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(
+                            locationSetting, System.currentTimeMillis());
+                    ((Callback)getActivity()).onItemSelected(weatherForLocationUri);
+                    /*
                     Intent intent = new Intent(getActivity(), DetailActivity.class)
                             .setData(WeatherContract.WeatherEntry.buildWeatherLocationWithDate(
                                     locationSetting, cursor.getLong(COL_WEATHER_DATE)
                             ));
                     startActivity(intent);
+                    */
+
                 }
             }
         });

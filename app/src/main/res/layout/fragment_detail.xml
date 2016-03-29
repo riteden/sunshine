@@ -54,8 +54,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:id="@+id/detail_icon"
-                    android:src="@drawable/art_clear"/>
+                    android:id="@+id/detail_icon"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -65,17 +64,14 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="HUMILITY:"
             android:id="@+id/detail_humidity_textview"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="WIND:"
             android:id="@+id/detail_wind_textview"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="PRESSURE:"
             android:id="@+id/detail_pressure_textview"/>
     </LinearLayout>
 </ScrollView>
