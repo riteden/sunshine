@@ -87,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
                     .commit();
         }
         else{
+            Log.v(LOG_TAG, "dateUri = " + dateUri);
             Intent intent = new Intent(this, DetailActivity.class)
                     .setData(dateUri);
             startActivity(intent);

@@ -90,6 +90,7 @@ public class DetailActivityFragment extends Fragment
         Bundle arguments = getArguments();
         if (arguments != null) {
             mUri = arguments.getParcelable(DetailActivityFragment.DETAIL_URI);
+            Log.v(LOG_TAG, "mUri = " + mUri);
         }
 
         Log.v(LOG_TAG, "onCreateView");

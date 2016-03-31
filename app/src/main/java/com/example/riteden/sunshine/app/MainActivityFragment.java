@@ -50,17 +50,14 @@ import android.support.v4.content.CursorLoader;
 public class MainActivityFragment extends Fragment
         implements LoaderManager.LoaderCallbacks<Cursor>{
 
-    Callback mCallback;
+    private int mPosition;
+    private ListView mlistView;
     private ForecastAdapter AA;
+    private final String LIST_POSITION = "list_position";
     private final String LOG_TAG = MainActivityFragment.class.getSimpleName();
     private static final int FORECAST_LOADER = 0;
     private static final String[] FORECAST_COLUMNS = {
-            // In this case the id needs to be fully qualified with a table name, since
-            // the content provider joins the location & weather tables in the background
-            // (both have an _id column)
-            // On the one hand, that's annoying.  On the other, you can search the weather table
-            // using the location set by the user, which is only in the Location table.
-            // So the convenience is worth it.
+
             WeatherContract.WeatherEntry.TABLE_NAME + "." + WeatherContract.WeatherEntry._ID,
             WeatherContract.WeatherEntry.COLUMN_DATE,
             WeatherContract.WeatherEntry.COLUMN_SHORT_DESC,
@@ -84,9 +81,6 @@ public class MainActivityFragment extends Fragment
     static final int COL_COORD_LAT = 7;
     static final int COL_COORD_LONG = 8;
     private static final int MY_LOADER_ID = 0;
-
-
-
 
     public MainActivityFragment() {
 
@@ -147,6 +141,8 @@ public class MainActivityFragment extends Fragment
         // Swap the new cursor in.  (The framework will take care of closing the
         // old cursor once we return.)
         AA.swapCursor(data);
+        if(mPosition != ListView.INVALID_POSITION)
+            mlistView.setSelection(mPosition);
     }
 
     public void onLoaderReset(Loader<Cursor> loader){
@@ -199,37 +195,42 @@ public class MainActivityFragment extends Fragment
     }
 
     @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        // Save the user's current game state
+        if (mPosition != ListView.INVALID_POSITION)
+            savedInstanceState.putInt(LIST_POSITION, mPosition);
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootview = inflater.inflate(R.layout.fragment_main, container, false);
         //List<String> myList = new ArrayList<String>();
-
+        if(savedInstanceState != null && savedInstanceState.containsKey(LIST_POSITION)){
+            mPosition = savedInstanceState.getInt(LIST_POSITION);
+        }
         //myList.add(new FetchWeatherTask().execute());
-        ListView listView = (ListView) rootview.findViewById(R.id.listview_forecast);
+        mlistView = (ListView) rootview.findViewById(R.id.listview_forecast);
         AA = new ForecastAdapter(getActivity(), null, 0);
 
-        listView.setAdapter(AA);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mlistView.setAdapter(AA);
+        mlistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 // CursorAdapter returns a cursor at the correct position for getItem(), or null
                 // if it cannot seek to that position.
+                //TODO: CHECK IF THE IMPLEMENTATION IS RIGHT
                 Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
                 if (cursor != null) {
                     String locationSetting = Utility.getPreferredLocation(getActivity());
                     Uri weatherForLocationUri = WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(
                             locationSetting, System.currentTimeMillis());
                     ((Callback)getActivity()).onItemSelected(weatherForLocationUri);
-                    /*
-                    Intent intent = new Intent(getActivity(), DetailActivity.class)
-                            .setData(WeatherContract.WeatherEntry.buildWeatherLocationWithDate(
-                                    locationSetting, cursor.getLong(COL_WEATHER_DATE)
-                            ));
-                    startActivity(intent);
-                    */
-
                 }
+                mPosition = position;
             }
         });
 
