@@ -230,6 +230,7 @@ public class DetailActivityFragment extends Fragment
 
     void onLocationChanged( String newLocation ) {
         // replace the uri, since the location has changed
+        Log.v(LOG_TAG, "onLocationChanged");
         Uri uri = mUri;
         if (null != uri) {
             long date = WeatherContract.WeatherEntry.getDateFromUri(uri);
