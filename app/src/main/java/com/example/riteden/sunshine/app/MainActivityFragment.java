@@ -1,12 +1,16 @@
 package com.example.riteden.sunshine.app;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -23,6 +27,7 @@ import android.text.format.Time;
 import android.widget.Toast;
 
 import com.example.riteden.sunshine.app.data.WeatherContract;
+import com.example.riteden.sunshine.app.service.SunshineService;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -181,11 +186,20 @@ public class MainActivityFragment extends Fragment
     }
 
     public void refresh(){
-        FetchWeatherTask weatherTask = new FetchWeatherTask(getActivity());
+        //FetchWeatherTask weatherTask = new FetchWeatherTask(getActivity());
+        Log.v(LOG_TAG, "refresh");
+        AlarmManager alarmMgr = (AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(getActivity(), SunshineService.AlarmReceiver.class);
+        intent.putExtra(SunshineService.LOCATION_QUERY_EXTRA,
+                Utility.getPreferredLocation(getActivity()));
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(getActivity(), 0, intent, PendingIntent.FLAG_ONE_SHOT);
 
-        String location = Utility.getPreferredLocation(getActivity());
-        Log.v(LOG_TAG, "location = " + location);
-        weatherTask.execute(location);
+        alarmMgr.set(AlarmManager.RTC_WAKEUP,
+                System.currentTimeMillis() +
+                        5 * 1000, alarmIntent);
+
+
+        //weatherTask.execute(location);
     }
 
     @Override
