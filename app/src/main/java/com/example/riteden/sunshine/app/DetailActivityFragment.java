@@ -191,10 +191,10 @@ public class DetailActivityFragment extends Fragment
         boolean isMetric = Utility.isMetric(getActivity());
 
         String high = Utility.formatTemperature(getActivity(),
-                data.getDouble(COL_WEATHER_MAX_TEMP), isMetric);
+                data.getDouble(COL_WEATHER_MAX_TEMP));
         mHighTempView.setText(high);
         String low = Utility.formatTemperature(getActivity(),
-                data.getDouble(COL_WEATHER_MIN_TEMP), isMetric);
+                data.getDouble(COL_WEATHER_MIN_TEMP));
         mLowTempView.setText(low);
         //str = String.format("%s - %s - %s/%s", dateString, weatherDescription, high, low);
 

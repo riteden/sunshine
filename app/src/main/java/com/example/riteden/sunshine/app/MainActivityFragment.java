@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import com.example.riteden.sunshine.app.data.WeatherContract;
 import com.example.riteden.sunshine.app.service.SunshineService;
+import com.example.riteden.sunshine.app.sync.SunshineSyncAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -168,7 +169,7 @@ public class MainActivityFragment extends Fragment
             case R.id.action_map:
                 String location = Utility.getPreferredLocation(getActivity());
                 Uri gmmIntentUri = Uri.parse("geo:0,0?").buildUpon().appendQueryParameter("q", location).build();
-                showMap(gmmIntentUri);
+                showMap();
                 return true;
             default:
                 break;
@@ -177,17 +178,33 @@ public class MainActivityFragment extends Fragment
         return super.onOptionsItemSelected(item);
     }
 
-    public void showMap(Uri geoLocation) {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(geoLocation);
-        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
-            startActivity(intent);
+    public void showMap() {
+        if ( null != AA ) {
+            Cursor c = AA.getCursor();
+            if ( null != c ) {
+                c.moveToPosition(0);
+                String posLat = c.getString(COL_COORD_LAT);
+                String posLong = c.getString(COL_COORD_LONG);
+                Uri geoLocation = Uri.parse("geo:" + posLat + "," + posLong);
+                Log.v(LOG_TAG, "geo = " +geoLocation.toString());
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(geoLocation);
+
+                if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+                    startActivity(intent);
+                } else {
+                    Log.d(LOG_TAG, "Couldn't call " + geoLocation.toString() + ", no receiving apps installed!");
+                }
+            }
+
         }
     }
 
     public void refresh(){
         //FetchWeatherTask weatherTask = new FetchWeatherTask(getActivity());
+
         Log.v(LOG_TAG, "refresh");
+        /*
         AlarmManager alarmMgr = (AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(getActivity(), SunshineService.AlarmReceiver.class);
         intent.putExtra(SunshineService.LOCATION_QUERY_EXTRA,
@@ -198,7 +215,8 @@ public class MainActivityFragment extends Fragment
                 System.currentTimeMillis() +
                         5 * 1000, alarmIntent);
 
-
+        */
+        SunshineSyncAdapter.syncImmediately(getActivity());
         //weatherTask.execute(location);
     }
 

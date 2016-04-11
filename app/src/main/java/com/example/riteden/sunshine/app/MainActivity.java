@@ -15,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.example.riteden.sunshine.app.data.WeatherContract;
+import com.example.riteden.sunshine.app.sync.SunshineSyncAdapter;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -68,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
 
-
+        SunshineSyncAdapter.initializeSyncAdapter(this);
         Log.v(LOG_TAG, "mTwoPane = " + Boolean.toString(mTwoPane));
     }
 
